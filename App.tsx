@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet } from 'react-native';
-import Picker from '@react-native-picker/picker';
-
+import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'react-native-image-picker';
 
 interface ContractorFormProps {
@@ -23,7 +22,7 @@ interface response {
 	uri?: string;
 }
 
-const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
+const ContractorForm: React.FC<ContractorFormProps> = () => {
 	const [formState, setFormState] = useState<ContractorData>({
 		firstName: '',
 		lastName: '',
@@ -65,13 +64,13 @@ const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
 		}
 	};
 
-	const validateImage = (uri: string): boolean => {
+	const validateImage = async (uri: string): Promise<boolean> => {
 		const extension = uri.split('.').pop()?.toLowerCase();
 		if (extension !== 'jpg' && extension !== 'jpeg') {
 			return false;
 		}
 
-		const imageRatio = getImageRatio(uri);
+		const imageRatio: any = await getImageRatio(uri);
 		if (imageRatio !== 1) {
 			return false;
 		}
@@ -79,7 +78,7 @@ const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
 		return true;
 	};
 
-	const getImageRatio = (uri: string): number => {
+	const getImageRatio = (uri: string): Promise<number> => {
 		return new Promise((resolve, reject) => {
 			Image.getSize(
 				uri,
@@ -99,13 +98,14 @@ const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
 
 	const styles = StyleSheet.create({
 		container: {
+			marginTop: 100,
 			flex: 1,
 			padding: 16,
 			alignItems: 'center',
 		},
 		input: {
-			height: 40,
-			width: '100%',
+			height: 50,
+			width: '90%',
 			marginVertical: 8,
 			paddingHorizontal: 8,
 			borderWidth: 1,
@@ -161,7 +161,7 @@ const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
 				<Button
 					title='Wybierz zdjęcie'
 					onPress={() =>
-						ImagePicker.launchImageLibrary(
+						(ImagePicker as any).launchImageLibrary(
 							{
 								mediaType: 'photo',
 								includeBase64: false,
@@ -176,7 +176,9 @@ const ContractorForm: React.FC<ContractorFormProps> = ({ onSubmit: any }) => {
 						)
 					}
 				/>
-				<Button style={styles.button} title='Zapisz' onPress={handleSubmit} />
+				<View style={styles.button}>
+					<Button title='Zapisz' onPress={handleSubmit} />
+				</View>
 			</View>
 		</>
 	);
