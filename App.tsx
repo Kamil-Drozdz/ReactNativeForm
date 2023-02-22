@@ -39,7 +39,7 @@ const ContractorForm: React.FC<ContractorFormProps> = () => {
 		setFormState({ ...formState, image: uri });
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		const { idNumber, type } = formState;
 		if (!validateIdNumber(idNumber, type)) {
 			alert('Nieprawidłowy numer identyfikacyjny');
@@ -49,7 +49,24 @@ const ContractorForm: React.FC<ContractorFormProps> = () => {
 			alert('Nieprawidłowy format zdjęcia lub nieprawidłowe proporcje');
 			return;
 		}
-		onSubmit(formState);
+		try {
+			const response = await fetch('https://localhost:60001/Contractor/Save', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formState),
+			});
+			if (response.status === 200) {
+				alert('Zapisano');
+			} else if (response.status === 404) {
+				alert('Nie znaleziono metody zapisu');
+			} else {
+				alert('Wystąpił błąd');
+			}
+		} catch (error) {
+			alert('Wystąpił błąd');
+		}
 	};
 
 	const validateIdNumber = (idNumber: string, type: string): boolean => {
